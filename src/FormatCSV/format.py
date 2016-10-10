@@ -12,7 +12,7 @@ os.chdir(work_dir)
 def reformat(account):
     accountData = pandas.read_csv(account, sep=';', usecols=[0, 2, 4], parse_dates=[0], dayfirst=True, quotechar='"', encoding='cp1252', header=0, names=['Date', 'Payee', 'Amount'])
     accountData['Amount'] = accountData['Amount'].str.replace('.', '').str.replace(',', '.')
-    accountData.to_csv(account, index=False)
+    accountData.to_csv(account, index=False, encoding='utf-8')
     
 for csvFilename in os.listdir('.'):
     if not csvFilename.endswith('.csv'):
