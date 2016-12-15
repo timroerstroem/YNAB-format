@@ -5,9 +5,9 @@ Created on 21 Jul 2016
 '''
 import os
 import pandas
+from time import sleep
 
-work_dir = os.path.expanduser('~/Downloads')
-os.chdir(work_dir)
+os.chdir(os.path.expanduser('~/Downloads'))
 
 
 def reformat(account):
@@ -17,23 +17,28 @@ def reformat(account):
     account_data = pandas.read_csv(account, sep=';', usecols=['Dato', 'Tekst',
                                                               'Beløb'],
                                    parse_dates=[0], dayfirst=True,
-                                   quotechar='"', encoding='cp1252', header=0,
-                                   names=['Date', 'Payee', 'Amount'])
+                                   quotechar='"', encoding='cp1252', header=0)
+    account_data.columns = ['Date', 'Payee', 'Amount']
     account_data['Amount'] = account_data['Amount'].str.replace('.', '')
     account_data['Amount'] = account_data['Amount'].str.replace(',', '.')
     account_data.to_csv(account, index=False, encoding='utf-8')
 
 
-for csv_filename in os.listdir('.'):
-    if not csv_filename.endswith('.csv'):
+for filename in os.listdir('.'):
+    if not filename.endswith('.csv'):
         continue  # skip non-csv files
 
-    column_check = pandas.read_csv(csv_filename)
-
-    if len(column_check) == 3:
-        # If the file has only  three columns, we have already reformatted it.
-        print(csv_filename + " already reformatted, skipping.")
+    try:
+        # See if we can read the file.
+        pandas.read_csv(filename)
+        # If pandas can read the file by default, it should be reformatted
+        # already, so skip it.
         continue
+    except:
+        # Pandas has thrown some error, this probably means that the file
+        # is a native bank csv, so reformat it.
+        # It seems somewhat ugly to do it in this backwards way...
+        print("Reformatting " + filename + "...")
+        reformat(filename)
 
-    print("Reformatting " + csv_filename + "...")
-    reformat(csv_filename)
+sleep(1)
