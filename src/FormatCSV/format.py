@@ -12,7 +12,10 @@ os.chdir(os.path.expanduser('~/Downloads'))
 
 def reformat(account):
     '''This function uses the pandas library to extract the required
-    information from a CSV file from presumably most Danish banks.
+    information from a CSV file from -- presumably -- most Danish banks.
+    Does not work with CSV files from:
+        Coop Bank
+        Forbrugsforeningen
     '''
     account_data = pandas.read_csv(account, sep=';', usecols=['Dato', 'Tekst',
                                                               'Beløb'],
