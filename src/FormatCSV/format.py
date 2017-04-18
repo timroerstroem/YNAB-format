@@ -10,15 +10,16 @@ from time import sleep
 os.chdir(os.path.expanduser('~/Downloads'))
 
 
-def reformat(account):
+def reformat(account, date_col, text_col, amount_col):
     '''This function uses the pandas library to extract the required
     information from a CSV file from -- presumably -- most Danish banks.
     Does not work with CSV files from:
         Coop Bank
         Forbrugsforeningen
     '''
-    account_data = pandas.read_csv(account, sep=';', usecols=['Dato', 'Tekst',
-                                                              'Beløb'],
+    account_data = pandas.read_csv(account, sep=';', usecols=[date_col,
+                                                              text_col,
+                                                              amount_col],
                                    parse_dates=[0], dayfirst=True,
                                    quotechar='"', encoding='cp1252', header=0)
     account_data.columns = ['Date', 'Payee', 'Amount']
@@ -42,6 +43,11 @@ for filename in os.listdir('.'):
         # is a native bank csv, so reformat it.
         # It seems somewhat ugly to do it in this backwards way...
         print("Reformatting " + filename + "...")
-        reformat(filename)
+        try:
+            # Works for Alm. Brand, presumably others.
+            reformat(filename, 'Dato', 'Tekst', 'Beløb')
+        except:
+            # Works for Coop, others may just throw up.
+            reformat(filename, 'Dato', 'Betalingsident', 'Beløb')
 
 sleep(1)
