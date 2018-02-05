@@ -21,33 +21,22 @@ def reformat(account, date_col, text_col, amount_col):
                                                               text_col,
                                                               amount_col],
                                    parse_dates=[0], dayfirst=True,
-                                   quotechar='"', encoding='cp1252', header=0)
+                                   quotechar='"', encoding='ansi', header=0)
     account_data.columns = ['Date', 'Payee', 'Amount']
-    account_data['Amount'] = account_data['Amount'].str.replace('.', '')
-    account_data['Amount'] = account_data['Amount'].str.replace(',', '.')
+    # If the amounts column contains commas, replace them with dots. Also
+    # remove any thousands separators
+    if ',' in str(account_data['Amount'][1]):
+        account_data['Amount'] = account_data['Amount'].str.replace('.', '')
+        account_data['Amount'] = account_data['Amount'].str.replace(',', '.')
+
     account_data.to_csv(account, index=False, encoding='utf-8')
 
 
 for filename in os.listdir('.'):
     if not filename.endswith('.csv'):
+        print("Skipping " + filename + "...")
         continue  # skip non-csv files
-
-    try:
-        # See if we can read the file.
-        pandas.read_csv(filename)
-        # If pandas can read the file by default, it should be reformatted
-        # already, so skip it.
-        continue
-    except:
-        # Pandas has thrown some error, this probably means that the file
-        # is a native bank csv, so reformat it.
-        # It seems somewhat ugly to do it in this backwards way...
-        print("Reformatting " + filename + "...")
-        try:
-            # Works for Alm. Brand, presumably others.
-            reformat(filename, 'Dato', 'Tekst', 'Beløb')
-        except:
-            # Works for Coop, others may just throw up.
-            reformat(filename, 'Dato', 'Betalingsident', 'Beløb')
+    print("Reformatting " + filename + "...")
+    reformat(filename, 'Dato', 'Tekst', 'Beløb')
 
 sleep(1)
