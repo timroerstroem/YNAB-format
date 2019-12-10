@@ -39,4 +39,4 @@ for filename in os.listdir('.'):
     print("Reformatting " + filename + "...")
     reformat(filename, 'Dato', 'Tekst', 'Beløb')
 
-sleep(1)
+sleep(2)
