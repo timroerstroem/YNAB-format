@@ -21,7 +21,7 @@ def reformat(account, date_col, text_col, amount_col):
                                                               text_col,
                                                               amount_col],
                                    parse_dates=[0], dayfirst=True,
-                                   quotechar='"', encoding='ansi', header=0)
+                                   quotechar='"', encoding='latin_1', header=0)
     account_data.columns = ['Date', 'Payee', 'Amount']
     # If the amounts column contains commas, replace them with dots. Also
     # remove any thousands separators
